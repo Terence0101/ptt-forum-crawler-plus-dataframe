@@ -1,10 +1,11 @@
-#抓取ptt某討論板的網頁原始碼(HTML)
+#load urllib, beautifulsoup, and pandas
 import urllib.request as req
 import bs4
 import pandas as pd
 
+#crawl html of gossiping board 
 def getData(url):
-    #建立一個request 物件，所以附加request headers的資訊
+    #headers include cookie and user-agent
     request=req.Request(url, headers={
         'cookie':'over18=1',
         'User-Agent':'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_4) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/84.0.4147.105 Safari/537.36'
@@ -12,45 +13,42 @@ def getData(url):
     with req.urlopen(request) as response:
         data=response.read().decode('utf-8')
 
-    #解析原始碼並取得每篇文章標題、推文數、網址
+    #analysing html and picking up '推文數'、'標題'、'網址'
     root=bs4.BeautifulSoup(data, 'html.parser')
-    titles=root.find_all('div', class_='r-ent')#找class="r-ent"的div標籤
+    titles=root.find_all('div', class_='r-ent') #searching 'div' which in 'class=r-ent'
     data = []
     for title in titles:
-        if title.a != None:#如果標題有a標籤就印出來
+        if title.a != None:#printing out title if 'a' exists
             eachtitle = title.a.string
             eachurl = 'https://www.ptt.cc/'+title.a['href']
-            if title.span != None:#在標題有a的情況下，如果有span標籤也印出來
+            if title.span != None: #Under the condition of first 'if', printing out the string of 'span'
                 push = title.span.string
             else:
-                push = '0'##在標題有a的情況下，如果沒有span標籤補0印出來
+                push = '0'#printing out as '0' if there is no span 
         c = [push, eachtitle, eachurl]        
         data.append(c)   
     dataframe(data)
     
-    u = root.select("div.btn-group.btn-group-paging a") #a標籤
+    u = root.select("div.btn-group.btn-group-paging a") 
     print ("---------本頁的URL為", url, '---------')
-    url = "https://www.ptt.cc"+ u[1]["href"] #本頁的網址
+    url = "https://www.ptt.cc"+ u[1]["href"] 
             
-    #抓取下一頁連結
-    nextlink=root.find('a',string='‹ 上頁')#找到內文是 上頁的a連結
+    # crawl next link 
+    nextlink=root.find('a',string='‹ 上頁') # searching 'a' when string=' 上頁'
     return nextlink['href']
 
-#在Jupyter上運行需要補上以下兩行程式碼。在Watson Studio上運行則不用。
-#def make_clickable(val):
-    #return '<a target="_blank" href="{}">{}</a>'.format(val, val)
+
+def make_clickable(val):
+    return '<a target="_blank" href="{}">{}</a>'.format(val, val)
 
 def dataframe (data):
     pd.set_option('display.max_colwidth', 250)
     df = pd.DataFrame(data, columns = ['推文數','標題','網址'])
     display(df.style.format({'網址':make_clickable}))
+    
 
-#抓取一個頁面的標題
-siteaddress=str(input('請輸入Ptt討論版網址：'))
-pagenumber=int(input('請輸入要抓取的頁數：'))
-
-pageurl=siteaddress
-count=0
-while count<pagenumber:
+pageurl='https://www.ptt.cc/bbs/Gossiping/index.html'
+count=
+while count<5:
     pageurl='https://www.ptt.cc' + getData(pageurl)
     count+=1
