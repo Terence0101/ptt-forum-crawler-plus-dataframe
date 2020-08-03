@@ -47,8 +47,12 @@ def dataframe (data):
     display(df.style.format({'網址':make_clickable}))
     
 
-pageurl='https://www.ptt.cc/bbs/Gossiping/index.html'
-count=
-while count<5:
+#input url and number of pages
+siteaddress=str(input('請輸入Ptt討論版網址：'))
+pagenumber=int(input('請輸入要抓取的頁數：'))
+
+pageurl=siteaddress
+count=0
+while count<pagenumber:
     pageurl='https://www.ptt.cc' + getData(pageurl)
     count+=1
