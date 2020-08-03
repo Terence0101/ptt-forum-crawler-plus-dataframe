@@ -30,7 +30,7 @@ def getData(url):
     dataframe(data)
     
     u = root.select("div.btn-group.btn-group-paging a") 
-    print ("---------本頁的URL為", url, '---------')
+    print ("---------URL of this page", url, '---------')
     url = "https://www.ptt.cc"+ u[1]["href"] 
             
     # crawl next link 
@@ -48,8 +48,8 @@ def dataframe (data):
     
 
 #input url and number of pages
-siteaddress=str(input('請輸入Ptt討論版網址：'))
-pagenumber=int(input('請輸入要抓取的頁數：'))
+siteaddress=str(input('Board URL：'))
+pagenumber=int(input('Number of pages：'))
 
 pageurl=siteaddress
 count=0
